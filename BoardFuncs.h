@@ -9,12 +9,15 @@
 #define GRN "\x1b[32m"
 #define WHT "\x1b[0m"
 
-typedef struct Position {
+typedef struct Positon {
     bool hasApple;
     bool hasSnake;
-} Posit;
+} Pos;
 
-void printBoard(int size, Posit board[size][size]);
+void printBoard(int size, Pos** board);
 
+Pos** initalizeBoard(int size);
+
+void freeBoard(int size, Pos** board);
 
 #endif

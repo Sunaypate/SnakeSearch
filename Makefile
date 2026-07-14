@@ -1,8 +1,8 @@
 
 all: SnakeSearch.exe
 
-SnakeSearch.exe: SnakeSearch.c
-	gcc SnakeSearch.c -o SnakeSearch.exe
+SnakeSearch.exe: SnakeSearch.c BoardFuncs.c
+	gcc SnakeSearch.c BoardFuncs.c -o SnakeSearch.exe
 
 run: SnakeSearch.exe
 	./SnakeSearch.exe

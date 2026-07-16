@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include "BoardFuncs.h"
+#include "SnakeLogic.h"
 
 
 int main() {
-    int boardSize = 10;
+    int boardSize = 9;
 
     Pos** board = initalizeBoard(boardSize);
+    Snake* snakeHead = createSnake(board, 4, 4);
 
 
     board[0][3].hasApple = true;
-    board[2][3].hasSnake = true;
-    board[2][4].hasSnake = true;
 
     printBoard(boardSize, board);
     freeBoard(boardSize, board);

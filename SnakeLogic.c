@@ -4,12 +4,18 @@
 #include <stdlib.h>
 
 
-// Needs to be redone with malloc to return a snake pointer
-Snake createSnake(int startRow, int startCol, Pos** board) {
+/**  
+ * Creates a new snake head that must be saved to a variable and be used with all other
+ * snake logic.
+*/
+Snake* createSnake(Pos** board, int startRow, int startCol) {
     board[startRow][startCol].hasSnake = true;
 
-    Snake start = {.row = startRow, .column = startCol};
-    return start;
+    Snake* newSnake = (Snake*)malloc(sizeof(Snake));
+    newSnake->row = startRow;
+    newSnake->column = startCol;
+
+    return newSnake;
 }
 
 Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
@@ -39,6 +45,11 @@ Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
     }
     
     // Updates board and destroys old end
+
+    if(priorSpot == NULL) {
+        // Handles if snake is only size of 1
+        return newHeadPtr;
+    }
     board[currSpot->row][currSpot->column].hasSnake = false;
     priorSpot->previousSpot = NULL;
     free(currSpot);

@@ -20,6 +20,7 @@ void printBoard(int size, Pos** board) {
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 Pos** initalizeBoard(int size) {

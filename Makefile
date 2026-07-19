@@ -7,7 +7,7 @@ SnakeSearch.exe: SnakeSearch.o BoardFuncs.o SnakeLogic.o
 SnakeSearch.o: SnakeSearch.c BoardFuncs.h SnakeLogic.h
 	gcc -c SnakeSearch.c -o SnakeSearch.o
 
-BoardFuncs.o: BoardFuncs.c 
+BoardFuncs.o: BoardFuncs.c BoardFuncs.h
 	gcc -c BoardFuncs.c -o BoardFuncs.o
 
 SnakeLogic.o: SnakeLogic.c BoardFuncs.h

@@ -3,7 +3,7 @@
 #include "SnakeLogic.h"
 
 enum Pause {
-    std = 10,
+    std = 0,
     lose = 50
 };
 
@@ -13,8 +13,8 @@ int main() {
     Pos** board = initalizeBoard(boardSize);
     Snake* snakeHead = createSnake(board, 2, 2);
     board[2][3].hasApple = true;
-    // board[1][1].hasApple = true;
-    // board[4][4].hasApple = true;
+    board[1][1].hasApple = true;
+    board[4][4].hasApple = true;
     printBoard(boardSize, std, board);
     char nextMove;
 
@@ -36,8 +36,12 @@ int main() {
                 snakeHead = moveSnake(board, snakeHead, snakeHead->X, snakeHead->Y + 1);           
         }
         printBoard(boardSize, std, board);
+
+        if (snakeHead == false) {
+            lostGame(boardSize, lose);
+            break;
+        }
     }
-    lostGame(boardSize, lose);
     freeBoard(boardSize, board);
     return 0;
 }

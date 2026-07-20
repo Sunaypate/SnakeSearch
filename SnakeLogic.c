@@ -19,9 +19,26 @@ Snake* createSnake(Pos** board, int startX, int startY) {
     return newSnake;
 }
 
+bool checkLoss(Pos** board, int size, int newX, int newY) {
+    // Checks bounds
+    if ((newX < 0  || newX > size) || 
+        (newY < 0  || newY > size)) {
+            return true;
+        }
+    else if (board[newX][newY].hasSnake) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
-    // Updates board
-    board[newX][newY].hasSnake = true;
+    int size = (sizeof(board)/sizeof(Pos*));
+
+    if (checkLoss(board, size, newX, newY)) {
+        return NULL;
+    }
 
     // Allocates memory for the new head
     Snake* newHeadPtr = (Snake*)malloc(sizeof(Snake));
@@ -35,11 +52,16 @@ Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
     newHeadPtr->Y = newY;
     newHeadPtr->previousSpot = currentHead;
 
+    // Updates board status
+    board[newX][newY].hasSnake = true;
+
+    // Checks for apples
     if (board[newX][newY].hasApple) {
         board[newX][newY].hasApple = false;
         return newHeadPtr;
         //TODO: make a call to boardfuncs to produce a new apple.
     }
+    
 
     // Finds end of snake
     Snake* currSpot = currentHead;

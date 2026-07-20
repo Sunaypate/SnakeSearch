@@ -8,7 +8,7 @@
 #define RED "\x1b[31m"
 #define GRN "\x1b[32m"
 #define WHT "\x1b[0m"
-#define BRED "\x1b[1;95m"
+#define DETH "\x1b[1;95m"
 
 #define UP "\x1b[A"
 #define DOWN "\x1b[B"
@@ -20,7 +20,14 @@ typedef struct Positon {
     bool hasSnake;
 } Pos;
 
-void printBoard(int size, int waitTime, Pos** board);
+
+// typedef struct Board {
+//     Pos **board;
+//     int width;
+//     int height;
+// } Board;
+
+void printBoard(int size, int waitTime, Pos **board);
 
 void clearBoard(int size);
 

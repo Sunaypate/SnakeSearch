@@ -2,16 +2,11 @@
 #define SnakeLogic_H
 
 #include "BoardFuncs.h"
-
-typedef struct SnakeBody {
-    int X;
-    int Y;
-    struct SnakeBody* previousSpot;
-} Snake;
+#include "DataStructs.h"
 
 Snake* createSnake(Pos** board, int startRow, int startCol);
 
-Snake* moveSnake(Pos **board, Snake *currentHead, int newX, int newY);
+Snake* moveSnake(Pos **board, int boardSize, Snake *currentHead, int newRow, int newColumn);
 
 void printHeadData(Snake* currentHead);
 

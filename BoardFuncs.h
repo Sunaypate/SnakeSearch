@@ -2,6 +2,7 @@
 #define BoardFuncs_h
 
 #include <stdbool.h>
+#include "DataStructs.h"
 
 //Defining Color Codes for printing
 
@@ -15,17 +16,13 @@
 #define DEL "\x1b[2K"
 #define RIT "\x1b[C"
 
-typedef struct Positon {
-    bool hasApple;
-    bool hasSnake;
-} Pos;
-
-
 // typedef struct Board {
 //     Pos **board;
 //     int width;
 //     int height;
 // } Board;
+
+bool addApple(Pos** board, int size);
 
 void printBoard(int size, int waitTime, Pos **board);
 
@@ -35,6 +32,11 @@ void lostGame(int size, int speed);
 
 Pos** initalizeBoard(int size);
 
+Coor* initializeValidSpaces(int size);
+
 void freeBoard(int size, Pos** board);
+
+void freeValidSpaces(Coor* validSpaces);
+
 
 #endif

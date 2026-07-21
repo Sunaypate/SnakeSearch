@@ -8,24 +8,24 @@
  * Creates a new snake head that must be saved to a variable and be used with all other
  * snake logic.
 */
-Snake* createSnake(Pos** board, int startX, int startY) {
-    board[startX][startY].hasSnake = true;
+Snake* createSnake(Pos** board, int startRow, int startColumn) {
+    board[startRow][startColumn].hasSnake = true;
 
     Snake* newSnake = (Snake*)malloc(sizeof(Snake));
-    newSnake->X = startX;
-    newSnake->Y = startY;
+    newSnake->Row = startRow;
+    newSnake->Column = startColumn;
     newSnake->previousSpot = NULL;
     
     return newSnake;
 }
 
-bool checkLoss(Pos** board, int size, int newX, int newY) {
+bool checkLoss(Pos** board, int size, int newRow, int newColumn) {
     // Checks bounds
-    if ((newX < 0  || newX > size) || 
-        (newY < 0  || newY > size)) {
+    if ((newRow < 0  || newRow > size) || 
+        (newColumn < 0  || newColumn > size)) {
             return true;
         }
-    else if (board[newX][newY].hasSnake) {
+    else if (board[newRow][newColumn].hasSnake) {
         return true;
     }
     else {
@@ -33,10 +33,8 @@ bool checkLoss(Pos** board, int size, int newX, int newY) {
     }
 }
 
-Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
-    int size = (sizeof(board)/sizeof(Pos*));
-
-    if (checkLoss(board, size, newX, newY)) {
+Snake* moveSnake(Pos** board, int size, Snake* currentHead, int newRow, int newColumn) {
+    if (checkLoss(board, size, newRow, newColumn)) {
         return NULL;
     }
 
@@ -48,18 +46,20 @@ Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
     }  
     
     // Sets data for the new head
-    newHeadPtr->X = newX;
-    newHeadPtr->Y = newY;
+    newHeadPtr->Row = newRow;
+    newHeadPtr->Column = newColumn;
     newHeadPtr->previousSpot = currentHead;
 
     // Updates board status
-    board[newX][newY].hasSnake = true;
+    board[newRow][newColumn].hasSnake = true;
 
     // Checks for apples
-    if (board[newX][newY].hasApple) {
-        board[newX][newY].hasApple = false;
-        return newHeadPtr;
-        //TODO: make a call to boardfuncs to produce a new apple.
+    if (board[newRow][newColumn].hasApple) {
+        board[newRow][newColumn].hasApple = false;
+        if (addApple(board, size)) {
+            return newHeadPtr;
+        }
+        printf("win condtion triggered");
     }
     
 
@@ -80,7 +80,7 @@ Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
     else {
         priorSpot->previousSpot = NULL;
     }
-    board[currSpot->X][currSpot->Y].hasSnake = false;
+    board[currSpot->Row][currSpot->Column].hasSnake = false;
     free(currSpot);
 
     // Returns a new head to track
@@ -91,7 +91,7 @@ Snake* moveSnake(Pos** board, Snake* currentHead, int newX, int newY) {
  * Debugging function for figuring out info on the current head.
  */
 void printHeadData(Snake* currentHead) {
-    printf("Current X: %d\n", currentHead->X);
-    printf("Current Y: %d\n", currentHead->Y);
+    printf("Current X: %d\n", currentHead->Row);
+    printf("Current Y: %d\n", currentHead->Column);
     printf("Previous Part: %p\n", currentHead->previousSpot);
 }

@@ -5,66 +5,37 @@
 #include <stdlib.h>
 #include <windows.h>
 
-enum Axis {
-    Horizontal = 1,
-    Vertical = 2
-} randAxis;
-
 void moveToRight(int size) {
     for (int i = 0; i < size * 2; i++) {
         printf(RIT);
     }
 }
 
-Snake* addNode(Snake* oldNode, int X, int Y) {
-    Snake* newSpot;
-    newSpot->X = X;
-    newSpot->Y = Y;
-    newSpot->previousSpot = oldNode;
-    return newSpot;
-}
-
-//TODO: actually test to see if this works
-void addApple(Pos** board, int size, Snake* head) {
-    // Seeds with random time
-    srand((unsigned int)GetTickCount());
-
-    // Random Placement Values
-    randAxis = (rand() % (2)) + 1;
-    int randLine = (rand() % ((size - 1) + 1));
-
-    // Treat this as a linked list of valid locations rather than a player snake
-    Snake* validSpots;
+//TODO: Implement tracking of all empty spaces for better efficiency
+bool addApple(Pos** board, int size) {    
+    // Treat this as a list of valid locations rather than a player snake
+    Coor validSpots[size];
     int count = 0;
-
-    //TODO: check to see if line has no valid spaces
-    switch (randAxis) {
-        case Horizontal:
-            for (int i = 0; i < size; i++) {
-                if (board[randLine][i].hasSnake) {
-                    continue;
-                }
-                count++;
-                validSpots = addNode(validSpots, randLine, i);
-            }
-
-            int newApple = (rand() % (count + 1));
-            Snake* newAppleLoc = validSpots;
-
-            while(count > newApple) {
-                newAppleLoc = newAppleLoc->previousSpot;
-                count--;
-            }
-
-            board[newAppleLoc->X][newAppleLoc->Y].hasApple = true;
-            return;
-        break;
-
-        //TODO: Copy horizontal case over to vertical
-        case Vertical:
-        break;
-    }
     
+    // Creates array of valid positions
+    while (count <= 0) {
+        int randRow = (rand() % ((size - 1) + 1));
+        
+        // Finds all valid spots
+        for (int i = 0; i < size; i++) {
+            if (board[randRow][i].hasSnake) {
+                continue;
+            }
+            validSpots[count].Row = randRow;
+            validSpots[count].Column = i;
+            count++;
+        }
+    }
+
+    // randFormula = ((rand() % (max - min + 1)) + 1)
+    int newApple = rand() % ((count - 1) + 0 + 1);
+    board[validSpots[newApple].Row][validSpots[newApple].Column].hasApple = true;
+    return true;
 }
 
 void printBoard(int size, int waitTime, Pos** board) {
@@ -88,7 +59,9 @@ void printBoard(int size, int waitTime, Pos** board) {
 }
 
 void clearBoard(int size) {
-    for (int i = 0; i < size + 2; i++) {
+    int exClearLines = 2;
+
+    for (int i = 0; i < size + exClearLines; i++) {
         printf(DEL UP "");
     }
     printf(DEL "\r");
@@ -131,9 +104,28 @@ Pos** initalizeBoard(int size) {
     return board;
 }
 
+Coor* initializeValidSpaces(int size) {
+    Coor* validSpaces = (Coor*)malloc(size * (sizeof(Coor)));
+
+    int count = 0;
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            validSpaces[count].Row = row;
+            validSpaces[count].Column = col;
+            count++;
+        }
+    }
+
+    return validSpaces;
+}
+
 void freeBoard(int size, Pos** board) {
     for (int i = 0; i < size; i++) {
         free(board[i]);
     }
     free(board);
+}
+
+void freeValidSpaces(Coor* validSpaces) {
+    free(validSpaces);
 }

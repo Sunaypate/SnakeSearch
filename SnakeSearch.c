@@ -1,41 +1,54 @@
 #include <stdio.h>
+#include <windows.h>
 #include "BoardFuncs.h"
 #include "SnakeLogic.h"
+#include "DataStructs.h"
 
 enum Pause {
-    std = 0,
-    lose = 50
+    std = 0, //25
+    lose = 75
 };
 
 int main() {
+    // Seed for apple spawns
+    srand((unsigned int)GetTickCount());
+
     int boardSize = 5;
 
     Pos** board = initalizeBoard(boardSize);
     Snake* snakeHead = createSnake(board, 2, 2);
-    board[2][3].hasApple = true;
-    board[1][1].hasApple = true;
-    board[4][4].hasApple = true;
+    Coor* validSpots = initializeValidSpaces(boardSize);
+    int totalValidSpot = (boardSize * boardSize) - 1;
+
+    board[0][0].hasApple = true;
+
     printBoard(boardSize, std, board);
     char nextMove;
 
 
-    for (int i = 0; i < 15; i++) {
-        scanf(" %c", &nextMove);
+    for (int i = 0; i < 200; i++) {
+        nextMove = ' ';
+        printf("Move %d of 200 (w a s d)\n", i);
+        while (!(nextMove == 'w' || nextMove == 'a' || nextMove == 's' || nextMove == 'd')) {
+            scanf(" %c", &nextMove);
+            printf(UP DEL "\r");
+        }
         clearBoard(boardSize);
-
+        
         if (nextMove == 'w') {
-            snakeHead = moveSnake(board, snakeHead, snakeHead->X - 1, snakeHead->Y);
+            snakeHead = moveSnake(board, boardSize, snakeHead, snakeHead->Row - 1, snakeHead->Column);
         }
         else if (nextMove == 'a') {
-            snakeHead = moveSnake(board, snakeHead, snakeHead->X, snakeHead->Y - 1);
+            snakeHead = moveSnake(board, boardSize, snakeHead, snakeHead->Row, snakeHead->Column - 1);
         }
         else if (nextMove == 's') {
-            snakeHead = moveSnake(board, snakeHead, snakeHead->X + 1, snakeHead->Y);
+            snakeHead = moveSnake(board, boardSize, snakeHead, snakeHead->Row + 1, snakeHead->Column);
         }
         else if (nextMove == 'd') {
-                snakeHead = moveSnake(board, snakeHead, snakeHead->X, snakeHead->Y + 1);           
+                snakeHead = moveSnake(board, boardSize, snakeHead, snakeHead->Row, snakeHead->Column + 1);           
         }
         printBoard(boardSize, std, board);
+        
 
         if (snakeHead == false) {
             lostGame(boardSize, lose);

@@ -4,27 +4,29 @@
 #include "SnakeLogic.h"
 #include "DataStructs.h"
 
-enum Pause {
+enum Timing {
     std = 0, //25
     lose = 75
 };
 
 int main() {
     // Seed for apple spawns
-    srand((unsigned int)GetTickCount());
+    //(unsigned int)GetTickCount()
+    srand(1);
 
-    int boardSize = 5;
+    int boardSize = 3;
 
     Pos** board = initalizeBoard(boardSize);
     Snake* snakeHead = createSnake(board, 2, 2);
     Coor* validSpots = initializeValidSpaces(boardSize);
-    int totalValidSpot = (boardSize * boardSize) - 1;
+    int totalValidSpots = (boardSize * boardSize);
+    removeSpace(board, validSpots, &totalValidSpots, 2, 2);
+
 
     board[0][0].hasApple = true;
 
     printBoard(boardSize, std, board);
     char nextMove;
-
 
     for (int i = 0; i < 200; i++) {
         nextMove = ' ';
@@ -47,14 +49,17 @@ int main() {
         else if (nextMove == 'd') {
                 snakeHead = moveSnake(board, boardSize, snakeHead, snakeHead->Row, snakeHead->Column + 1);           
         }
-        printBoard(boardSize, std, board);
         
+        printf("\n");
+        printBoard(boardSize, std, board);
 
         if (snakeHead == false) {
             lostGame(boardSize, lose);
             break;
         }
     }
+
     freeBoard(boardSize, board);
+    freeValidSpaces(validSpots);
     return 0;
 }

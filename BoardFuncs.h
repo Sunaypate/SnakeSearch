@@ -34,6 +34,12 @@ Pos** initalizeBoard(int size);
 
 Coor* initializeValidSpaces(int size);
 
+void removeSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int rRow, int rCol);
+
+void addSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int aRow, int aCol);
+
+void listValidSpaces(Pos** board, Coor* validSpaces, int* totalValidSpaces);
+
 void freeBoard(int size, Pos** board);
 
 void freeValidSpaces(Coor* validSpaces);

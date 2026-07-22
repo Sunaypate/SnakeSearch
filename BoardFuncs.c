@@ -95,9 +95,12 @@ Pos** initalizeBoard(int size) {
         board[row] = (Pos*)malloc(size * sizeof(Pos));
     }
 
+    int count = 0;
     for (int row = 0; row < size; row++) {
         for (int col = 0; col < size; col++) {
             board[row][col] = emptyPosit;
+            board[row][col].Index = count;
+            count++;
         }
     }
 
@@ -105,8 +108,7 @@ Pos** initalizeBoard(int size) {
 }
 
 Coor* initializeValidSpaces(int size) {
-    Coor* validSpaces = (Coor*)malloc(size * (sizeof(Coor)));
-
+    Coor* validSpaces = (Coor*)malloc(size * size * (sizeof(Coor)));
     int count = 0;
     for (int row = 0; row < size; row++) {
         for (int col = 0; col < size; col++) {
@@ -115,8 +117,54 @@ Coor* initializeValidSpaces(int size) {
             count++;
         }
     }
-
     return validSpaces;
+}
+
+void removeSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int rRow, int rCol) {
+    int filledIndex = board[rRow][rCol].Index;
+    int lastCoorIndex = (*totalValidSpaces) - 1;
+    
+    if(filledIndex == lastCoorIndex) {
+        (*totalValidSpaces)--;
+        return;
+    }
+
+    Coor lastCoor = validSpaces[lastCoorIndex];
+    validSpaces[lastCoorIndex] = validSpaces[filledIndex];
+    validSpaces[filledIndex] = lastCoor;
+
+    board[rRow][rCol].Index = lastCoorIndex;
+    board[lastCoor.Row][lastCoor.Column].Index = filledIndex;
+    
+    (*totalValidSpaces)--;
+}
+
+void addSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int aRow, int aCol) {
+    // 1: Get index of the space to add, and the invalid space immediately after valid spaces
+    int newindex = board[aRow][aCol].Index;
+    int lastInvalidIndex = (*totalValidSpaces);
+
+    // There will never be a case where there is only one invalid spot when adding, 
+    // so indexing out of the array should be impossible with the above line
+
+    // 3: Swap the new space and nearest filled space in validSpaces
+    Coor lastInvalidCoor = validSpaces[lastInvalidIndex];
+    validSpaces[lastInvalidIndex] = validSpaces[newindex];
+    validSpaces[newindex] = lastInvalidCoor;
+
+
+    // 4: Update their representation in the board so that the board indexes match the valid spaces array
+    board[aRow][aCol].Index = lastInvalidIndex;
+    board[lastInvalidCoor.Row][lastInvalidCoor.Column].Index = newindex;
+
+    // 5: Increment the valid spaces so that the freed space is included in
+    (*totalValidSpaces)++;
+}
+
+void listValidSpaces(Pos** board, Coor* validSpaces, int* totalValidSpaces) {
+    for (int i = 0; i < (*totalValidSpaces); i++) {
+        printf("Loc: %d is Valid with coordinate Row: %d Col: %d\n", i, validSpaces[i].Row, validSpaces[i].Column);
+    }
 }
 
 void freeBoard(int size, Pos** board) {

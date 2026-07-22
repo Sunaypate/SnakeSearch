@@ -10,37 +10,33 @@
 #define GRN "\x1b[32m"
 #define WHT "\x1b[0m"
 #define DETH "\x1b[1;95m"
+#define WON "\x1b[1;93m"
 
 #define UP "\x1b[A"
 #define DOWN "\x1b[B"
 #define DEL "\x1b[2K"
 #define RIT "\x1b[C"
 
-// typedef struct Board {
-//     Pos **board;
-//     int width;
-//     int height;
-// } Board;
 
-bool addApple(Pos** board, int size);
-
-void printBoard(int size, int waitTime, Pos **board);
-
-void clearBoard(int size);
-
-void lostGame(int size, int speed);
-
-Pos** initalizeBoard(int size);
+Space** initalizeBoard(int size);
 
 Coor* initializeValidSpaces(int size);
 
-void removeSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int rRow, int rCol);
+bool addApple(gameData gameInfo);
 
-void addSpace (Pos** board, Coor* validSpaces, int* totalValidSpaces, int aRow, int aCol);
+void printBoard(int size, int waitTime, Space **board);
 
-void listValidSpaces(Pos** board, Coor* validSpaces, int* totalValidSpaces);
+void clearBoard(int size);
 
-void freeBoard(int size, Pos** board);
+void endGame(int size, int speed);
+
+void removeSpace (gameData gameInfo, int rRow, int rCol);
+
+void addSpace (gameData gameInfo, int aRow, int aCol);
+
+void listValidSpaces(gameData gameInfo);
+
+void freeBoard(int size, Space** board);
 
 void freeValidSpaces(Coor* validSpaces);
 

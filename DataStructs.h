@@ -1,11 +1,11 @@
 #ifndef DataStructs_h
 #define DataStructs_h
-//TODO: Pick a better name for this since its similar to coordinate
-typedef struct Positon {
+
+typedef struct Space {
     bool hasApple;
     bool hasSnake;
     int Index;
-} Pos;
+} Space;
 
 typedef struct Coordinate {
     int Row;
@@ -19,7 +19,21 @@ typedef struct SnakeBody {
     struct SnakeBody* previousSpot;
 } Snake;
 
-//TODO: Make a struct to represent all key compoments that are used by most functions
-// I.E. board, board size, valid spaces, amount of valid spaces, ETC
+typedef struct gameData {
+    Space** board;
+    int boardSize;
+    Coor* validSpaces;
+    int* totalValidSpaces;
+} gameData;
+
+enum endCode {
+    safe,
+    won,
+    outOfBounds,
+    hitSelf
+};
+
+// Since end code is used by multiple files, it must be declared as existing, but only be edited in one file
+extern enum endCode currentEndCode;
 
 #endif

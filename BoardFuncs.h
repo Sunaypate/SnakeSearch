@@ -30,15 +30,12 @@ void clearBoard(int size);
 
 void endGame(int size, int speed);
 
-void removeSpace (gameData gameInfo, int rRow, int rCol);
-
 void addSpace (gameData gameInfo, int aRow, int aCol);
 
-void listValidSpaces(gameData gameInfo);
+void removeSpace (gameData gameInfo, int rRow, int rCol);
 
 void freeBoard(int size, Space** board);
 
 void freeValidSpaces(Coor* validSpaces);
-
 
 #endif

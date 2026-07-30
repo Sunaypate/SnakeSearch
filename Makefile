@@ -1,33 +1,53 @@
+CFLAGS = -Wall -Wextra -Werror
+
 OBJS =  BoardFuncs.o SnakeLogic.o SnakeAlg.o
 BUILD_OBJS = $(addprefix build/, $(OBJS))
 
+INLCUDE = BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
+INLCUDE_OBJS = $(addprefix include/, $(INLCUDE))
 
-all: SnakeSearch.exe
+.PHONY: all run quickSim replay clean 
 
-SnakeSearch.exe: $(BUILD_OBJS) build/SnakeSearch.o
-	gcc $(BUILD_OBJS) build/SnakeSearch.o -o SnakeSearch.exe
+all: bin/SnakeSearch.exe
 
-BotTester.exe: $(BUILD_OBJS) build/BotTester.o
-	gcc $(BUILD_OBJS) build/BotTester.o -o BotTester.exe
+bin/SnakeSearch.exe: $(BUILD_OBJS) build/SnakeSearch.o
+	gcc $(CFLAGS) $(BUILD_OBJS) build/SnakeSearch.o -o bin/SnakeSearch.exe
 
-build/SnakeSearch.o: SnakeSearch.c BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
-	gcc -c SnakeSearch.c -o build/SnakeSearch.o
+bin/BotTester.exe: $(BUILD_OBJS) build/BotTester.o
+	gcc $(CFLAGS) $(BUILD_OBJS) build/BotTester.o -o bin/BotTester.exe
 
-build/BotTester.o: BotTester.c BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
-	gcc -c BotTester.c -o build/BotTester.o
+bin/SeedPlayer.exe: $(BUILD_OBJS) build/SeedPlayer.o
+	gcc $(CFLAGS) $(BUILD_OBJS) build/SeedPlayer.o -o bin/SeedPlayer.exe
 
-build/BoardFuncs.o: BoardFuncs.c BoardFuncs.h DataStructs.h
-	gcc -c BoardFuncs.c -o build/BoardFuncs.o
+build/SnakeSearch.o: src/SnakeSearch.c $(INLCUDE_OBJS)
+	gcc $(CFLAGS) -c src/SnakeSearch.c -o build/SnakeSearch.o
 
-build/SnakeLogic.o: SnakeLogic.c SnakeLogic.h BoardFuncs.h DataStructs.h
-	gcc -c SnakeLogic.c -o build/SnakeLogic.o
+build/BotTester.o: src/BotTester.c $(INLCUDE_OBJS)
+	gcc $(CFLAGS) -c src/BotTester.c -o build/BotTester.o
 
-build/SnakeAlg.o: SnakeAlg.c SnakeAlg.h DataStructs.h
-	gcc -c SnakeAlg.c -o build/SnakeAlg.o
+build/SeedPlayer.o: src/SeedPlayer.c $(INLCUDE_OBJS)
+	gcc $(CFLAGS) -c src/SeedPlayer.c -o build/SeedPlayer.o
 
-run: SnakeSearch.exe
-	./SnakeSearch.exe
+
+build/BoardFuncs.o: src/BoardFuncs.c include/BoardFuncs.h include/DataStructs.h
+	gcc $(CFLAGS) -c src/BoardFuncs.c -o build/BoardFuncs.o
+
+build/SnakeLogic.o: src/SnakeLogic.c include/SnakeLogic.h include/BoardFuncs.h include/DataStructs.h
+	gcc $(CFLAGS) -c src/SnakeLogic.c -o build/SnakeLogic.o
+
+build/SnakeAlg.o: src/SnakeAlg.c include/SnakeAlg.h include/DataStructs.h
+	gcc $(CFLAGS) -c src/SnakeAlg.c -o build/SnakeAlg.o
+
+
+run: bin/SnakeSearch.exe
+	bin/SnakeSearch.exe
+
+quickSim: bin/BotTester.exe
+	bin/BotTester.exe 200000 4
+
+replay: bin/SeedPlayer.exe
+	bin/SeedPlayer.exe
 
 clean: 
-	del /q /f build\*
-	del *.exe
+	del /q build\*
+	del /q bin\*

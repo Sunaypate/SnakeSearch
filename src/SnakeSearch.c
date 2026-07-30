@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "BoardFuncs.h"
-#include "SnakeLogic.h"
-#include "SnakeAlg.h"
-#include "DataStructs.h"
+#include "../include/BoardFuncs.h"
+#include "../include/SnakeLogic.h"
+#include "../include/SnakeAlg.h"
+#include "../include/DataStructs.h"
 
 enum Timing {
 	std = 0, 
@@ -19,14 +19,13 @@ enum gameMode {
 
 int main() {
 	// Seed for apple spawns
-	// 
+	// (unsigned int)GetTickCount()
 	srand((unsigned int)GetTickCount());
 	gameData gameInfo;
 
 	printf("Select Game Mode (1:Human, 2:Bot, -1:Quit)\n");
 	scanf(" %d", &currMode);
-	printf(UP DEL "\r");
-	printf(UP DEL "\r");
+	deleteLine(2);
 	
 	while (currMode != end) {
 		int boardSize = 0;
@@ -34,18 +33,20 @@ int main() {
 		printf("Select A Board Size (must be greater than 2)\n");
 		while (boardSize < 3) {
 				scanf(" %d", &boardSize);
-				printf(UP DEL "\r");
+				deleteLine(1);
 		}
-		printf(UP DEL "\r");
+		deleteLine(3);
+		clearBoard(boardSize);
 
 		Space** board = initalizeBoard(boardSize);
 		Snake* snakeHead = createSnake(board, 2, 2);
+		int totalValidSpaces = boardSize*boardSize;
 
 		gameInfo.board = board;
 		gameInfo.boardSize = boardSize;
 		gameInfo.validSpaces = initializeValidSpaces(boardSize);
-		gameInfo.totalValidSpaces = &(int){boardSize * boardSize};
-		gameInfo.appleLocation = (Coor*)malloc(sizeof(gameInfo.appleLocation));
+		gameInfo.totalValidSpaces = &totalValidSpaces;
+		gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
 
 		removeSpace(gameInfo, 2, 2);
 		addApple(gameInfo);
@@ -63,12 +64,12 @@ int main() {
 			if(currMode == human) {
 				while (!(nextMove == 'w' || nextMove == 'a' || nextMove == 's' || nextMove == 'd')) {
 					scanf(" %c", &nextMove);
-					printf(UP DEL "\r");
+					deleteLine(1);
 				}
 			}
 			else {
-				nextMove = simpleMove(gameInfo, snakeHead);
-				Sleep(1000);
+				nextMove = safeMove(gameInfo, snakeHead);
+				Sleep(500);
 			}
 			
 			if (nextMove == 'w') {
@@ -88,8 +89,9 @@ int main() {
 			clearBoard(boardSize);
 			printBoard(boardSize, (std/(boardSize * boardSize)), board);
 			
-			if (snakeHead == NULL) {
+			if (currentEndCode != safe) {
 				endGame(boardSize, (lose/(boardSize * boardSize)));
+				printf("Total Moves: %d Total Apples: %d\n", moveCount, ((boardSize * boardSize) - *(gameInfo.totalValidSpaces) - 1));
 				break;
 			}
 			
@@ -98,10 +100,12 @@ int main() {
 		freeBoard(boardSize, board);
 		freeValidSpaces(gameInfo.validSpaces);
 		free(gameInfo.appleLocation);
+		freeSnake(snakeHead);
+		
 
 		printf("Select Game Mode (1:Human, 2:Bot, -1:Quit)\n");
 		scanf(" %d", &currMode);
-		printf(UP DEL "\r");
+		deleteLine(1);
 	}
 
 	return 0;

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "BoardFuncs.h"
-#include "SnakeLogic.h"
-#include "SnakeAlg.h"
-#include "DataStructs.h"
+#include "../include/BoardFuncs.h"
+#include "../include/SnakeLogic.h"
+#include "../include/SnakeAlg.h"
+#include "../include/DataStructs.h"
 
 char spinner(int cCycle) {
     char loadTypes[4] = {'|', '/', '-', '\\'};
@@ -12,34 +12,45 @@ char spinner(int cCycle) {
     return cLoad;
 }
 
+unsigned int generateSeed() {
+    LARGE_INTEGER qpc;
+    QueryPerformanceCounter(&qpc);
+    return (unsigned int)(qpc.QuadPart ^ (qpc.QuadPart >> 32));
+}
+
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
+    SYSTEMTIME sTime;
+    SYSTEMTIME eTime;
+    GetLocalTime(&sTime);
+
+    if (argc < 3) {
         printf("Pass total tests to trial and board size.\n");
         return 0;
     }
 
     int totalCycles = atoi(argv[1]);
     int boardSize = atoi(argv[2]);
-    int currentCycle = 1;
 
-    FILE* snakeData = fopen("SnakeData.csv", "w");
-
-    srand((unsigned int)GetTickCount());
+    FILE* snakeData = fopen("Data/SimpleSnakeData.csv", "w");
 	gameData gameInfo;
 
+    srand(generateSeed());
 
     for (int currentCycle = 0; currentCycle < totalCycles; currentCycle++) {
         printf("Current Cycle: %d %c", currentCycle, spinner(currentCycle));
-        //Sleep(5000/(100*totalCycles));
+        unsigned int seed = generateSeed();
+        srand(seed);
+        
 
         Space** board = initalizeBoard(boardSize);
         Snake* snakeHead = createSnake(board, 2, 2);
+        int totalValidSpaces = boardSize*boardSize;
 
         gameInfo.board = board;
         gameInfo.boardSize = boardSize;
         gameInfo.validSpaces = initializeValidSpaces(boardSize);
-        gameInfo.totalValidSpaces = &(int){boardSize * boardSize};
-        gameInfo.appleLocation = (Coor*)malloc(sizeof(gameInfo.appleLocation));
+        gameInfo.totalValidSpaces = &totalValidSpaces;
+        gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
 
         removeSpace(gameInfo, 2, 2);
         addApple(gameInfo);
@@ -47,9 +58,7 @@ int main(int argc, char *argv[]) {
         char nextMove;
         int totalMoves = 0;
 
-        Snake* currSpot;
         while (true) {
-            Snake* headCopy = snakeHead;
             nextMove = ' ';
             nextMove = simpleMove(gameInfo, snakeHead);
             
@@ -66,30 +75,27 @@ int main(int argc, char *argv[]) {
                 snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row, snakeHead->Column + 1);           
             }
             totalMoves++;
-            
-            if (snakeHead == NULL) {
-                currSpot = headCopy;
+            if (currentEndCode != safe) {
                 break;
             }
         }
 
-        int totalApples = 0;
-        Snake* priorSpot = NULL;
-        
-        while (currSpot->previousSpot != NULL) {
-            totalApples++;
-            priorSpot = currSpot;
-            currSpot = currSpot->previousSpot;
-        }
+        int totalApples = ((boardSize * boardSize) - *(gameInfo.totalValidSpaces) - 1);
 
         freeBoard(boardSize, board);
         freeValidSpaces(gameInfo.validSpaces);
         free(gameInfo.appleLocation);
-
-
+        freeSnake(snakeHead);
+        
+        
         char dataBuffer[100];
-        snprintf(dataBuffer, sizeof(dataBuffer), "%d,%d,%d\n", totalMoves, totalApples, boardSize);
+        snprintf(dataBuffer, sizeof(dataBuffer), "%d,%d,%u\n", totalMoves, totalApples, seed);
         fputs(dataBuffer, snakeData);
         printf(DEL "\r");
     }
+    GetLocalTime(&eTime);
+    SYSTEMTIME tTime = {.wMinute = eTime.wMinute - sTime.wMinute, 
+                        .wSecond = eTime.wSecond - sTime.wSecond,
+                        .wMilliseconds = eTime.wMilliseconds - sTime.wMilliseconds};
+    printf("Total Time: %d:%d.%d", tTime.wMinute, tTime.wSecond, tTime.wMilliseconds);
 }

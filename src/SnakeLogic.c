@@ -1,6 +1,6 @@
-#include "SnakeLogic.h"
+#include "../include/SnakeLogic.h"
 
-#include "BoardFuncs.h"
+#include "../include/BoardFuncs.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -18,7 +18,7 @@ Snake* createSnake(Space** board, int startRow, int startColumn) {
 	newSnake->Column = startColumn;
 	newSnake->previousSpot = NULL;
 	// Since the header file doesn't actually create a variable for this, it must be made here
-	
+	currentEndCode = safe;
 	return newSnake;
 }
 
@@ -49,7 +49,7 @@ Snake* moveSnake(gameData gameInfo, Snake* snakeHead, int newRow, int newColumn)
 	}  
 
 	if (checkLoss(board, size, newRow, newColumn)) {
-		return NULL;
+		return snakeHead;
 	}
 	
 	// Sets data for the new head
@@ -72,7 +72,7 @@ Snake* moveSnake(gameData gameInfo, Snake* snakeHead, int newRow, int newColumn)
 		
 		currentEndCode = won;
 		// Force game end or the code will get overidden
-		return NULL;
+		return newHeadPtr;
 	}
 
 
@@ -96,12 +96,22 @@ Snake* moveSnake(gameData gameInfo, Snake* snakeHead, int newRow, int newColumn)
 	board[currSpot->Row][currSpot->Column].hasSnake = false;
 
 	// Tracks head change in valid positions
-	
 	addSpace(gameInfo, currSpot->Row, currSpot->Column);
 	free(currSpot);
 
 	// Returns a new head to track
 	return newHeadPtr;
+}
+
+void freeSnake(Snake* currentHead) {
+	Snake* nextSpot = currentHead;
+	Snake* priorSpot = NULL;
+	while (nextSpot->previousSpot != NULL) {
+		priorSpot = nextSpot;
+		nextSpot = nextSpot->previousSpot;
+		free(priorSpot);
+	}
+	free(nextSpot);
 }
 
 /**

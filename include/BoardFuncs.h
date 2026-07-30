@@ -17,6 +17,7 @@
 #define DEL "\x1b[2K"
 #define RIT "\x1b[C"
 
+void deleteLine(int amount);
 
 Space** initalizeBoard(int size);
 

@@ -1,6 +1,6 @@
-#include "BoardFuncs.h"
+#include "../include/BoardFuncs.h"
 
-#include "SnakeLogic.h"
+#include "../include/SnakeLogic.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -9,6 +9,12 @@
 void moveToRight(int size) {
 	for (int i = 0; i < size * 2; i++) {
 		printf(RIT);
+	}
+}
+
+void deleteLine(int amount) {
+	for (int i = 0; i < amount; i++) {
+		printf(UP DEL "\r");
 	}
 }
 

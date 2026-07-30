@@ -5,4 +5,6 @@
 
 char simpleMove(gameData gameInfo, Snake* snakeHead);
 
+char safeMove(gameData gameInfo, Snake* snakeHead);
+
 #endif

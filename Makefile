@@ -1,14 +1,20 @@
-OBJS = SnakeSearch.o BoardFuncs.o SnakeLogic.o SnakeAlg.o
+OBJS =  BoardFuncs.o SnakeLogic.o SnakeAlg.o
 BUILD_OBJS = $(addprefix build/, $(OBJS))
 
 
 all: SnakeSearch.exe
 
-SnakeSearch.exe: $(BUILD_OBJS)
-	gcc $(BUILD_OBJS) -o SnakeSearch.exe
+SnakeSearch.exe: $(BUILD_OBJS) build/SnakeSearch.o
+	gcc $(BUILD_OBJS) build/SnakeSearch.o -o SnakeSearch.exe
 
-build/SnakeSearch.o: SnakeSearch.c BoardFuncs.h SnakeLogic.h DataStructs.h
+BotTester.exe: $(BUILD_OBJS) build/BotTester.o
+	gcc $(BUILD_OBJS) build/BotTester.o -o BotTester.exe
+
+build/SnakeSearch.o: SnakeSearch.c BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
 	gcc -c SnakeSearch.c -o build/SnakeSearch.o
+
+build/BotTester.o: BotTester.c BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
+	gcc -c BotTester.c -o build/BotTester.o
 
 build/BoardFuncs.o: BoardFuncs.c BoardFuncs.h DataStructs.h
 	gcc -c BoardFuncs.c -o build/BoardFuncs.o
@@ -24,4 +30,4 @@ run: SnakeSearch.exe
 
 clean: 
 	del /q /f build\*
-	del SnakeSearch.exe
+	del *.exe

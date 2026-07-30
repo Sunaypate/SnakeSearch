@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include "BoardFuncs.h"
 #include "SnakeLogic.h"
@@ -87,7 +88,7 @@ int main() {
 			clearBoard(boardSize);
 			printBoard(boardSize, (std/(boardSize * boardSize)), board);
 			
-			if (snakeHead == false) {
+			if (snakeHead == NULL) {
 				endGame(boardSize, (lose/(boardSize * boardSize)));
 				break;
 			}

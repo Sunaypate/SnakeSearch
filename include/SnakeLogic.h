@@ -4,7 +4,7 @@
 #include "BoardFuncs.h"
 #include "DataStructs.h"
 
-Snake* createSnake(Space** board, int startRow, int startCol);
+Snake* createSnake(Space** board, int boardSize);
 
 Snake* moveSnake(gameData gameInfo, Snake* snakeHead, int newRow, int newColumn);
 

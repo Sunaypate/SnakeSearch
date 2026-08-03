@@ -1,9 +1,9 @@
 CFLAGS = -Wall -Wextra -Werror
 
-OBJS =  BoardFuncs.o SnakeLogic.o SnakeAlg.o
+OBJS =  BoardFuncs.o SnakeLogic.o SnakeAlgs.o
 BUILD_OBJS = $(addprefix build/, $(OBJS))
 
-INLCUDE = BoardFuncs.h SnakeLogic.h SnakeAlg.h DataStructs.h
+INLCUDE = BoardFuncs.h SnakeLogic.h SnakeAlgs.h DataStructs.h
 INLCUDE_OBJS = $(addprefix include/, $(INLCUDE))
 
 .PHONY: all run quickSim replay clean 
@@ -35,15 +35,15 @@ build/BoardFuncs.o: src/BoardFuncs.c include/BoardFuncs.h include/DataStructs.h
 build/SnakeLogic.o: src/SnakeLogic.c include/SnakeLogic.h include/BoardFuncs.h include/DataStructs.h
 	gcc $(CFLAGS) -c src/SnakeLogic.c -o build/SnakeLogic.o
 
-build/SnakeAlg.o: src/SnakeAlg.c include/SnakeAlg.h include/DataStructs.h
-	gcc $(CFLAGS) -c src/SnakeAlg.c -o build/SnakeAlg.o
+build/SnakeAlgs.o: src/SnakeAlgs.c include/SnakeAlgs.h include/DataStructs.h
+	gcc $(CFLAGS) -c src/SnakeAlgs.c -o build/SnakeAlgs.o
 
 
 run: bin/SnakeSearch.exe
 	bin/SnakeSearch.exe
 
 quickSim: bin/BotTester.exe
-	bin/BotTester.exe 200000 4
+	bin/BotTester.exe 1000000 4
 
 replay: bin/SeedPlayer.exe
 	bin/SeedPlayer.exe

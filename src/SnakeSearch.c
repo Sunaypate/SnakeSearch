@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "../include/BoardFuncs.h"
 #include "../include/SnakeLogic.h"
-#include "../include/SnakeAlg.h"
+#include "../include/SnakeAlgs.h"
 #include "../include/DataStructs.h"
 
 enum Timing {
@@ -15,7 +15,13 @@ enum gameMode {
 	human = 1,
 	bot = 2,
 	end = -1
-} currMode = human;
+} currMode;
+
+enum botType {
+	SIMPLE = 1,
+	SAFE = 2,
+	TRACK = 3
+} currBotType;
 
 int main() {
 	// Seed for apple spawns
@@ -24,22 +30,42 @@ int main() {
 	gameData gameInfo;
 
 	printf("Select Game Mode (1:Human, 2:Bot, -1:Quit)\n");
-	scanf(" %d", &currMode);
+	int tempMode = 0;
+	while (tempMode != human && tempMode != bot && tempMode != end) {
+		scanf(" %d", &tempMode);
+		deleteLine(1);
+	}
+	currMode = tempMode;
 	deleteLine(2);
 	
+
 	while (currMode != end) {
 		int boardSize = 0;
-
 		printf("Select A Board Size (must be greater than 2)\n");
 		while (boardSize < 3) {
 				scanf(" %d", &boardSize);
 				deleteLine(1);
 		}
-		deleteLine(3);
-		clearBoard(boardSize);
+		deleteLine(2);
+
+		char** trackMoveTable;
+		if (currMode == bot) {
+			int tempBotType = 0;
+			printf("Select Bot Type (1:Simple, 2:Safe, 3:Track)\n");
+			while (tempBotType != SIMPLE && tempBotType != SAFE && tempBotType != TRACK) {
+				scanf(" %d", &tempBotType);
+				deleteLine(1);
+			}
+			currBotType = tempBotType;
+			deleteLine(2);
+
+			if (currBotType == TRACK) {
+				trackMoveTable = initTrackMoveTable(boardSize);
+			}
+		}		
 
 		Space** board = initalizeBoard(boardSize);
-		Snake* snakeHead = createSnake(board, 2, 2);
+		Snake* snakeHead = createSnake(board, boardSize);
 		int totalValidSpaces = boardSize*boardSize;
 
 		gameInfo.board = board;
@@ -48,7 +74,7 @@ int main() {
 		gameInfo.totalValidSpaces = &totalValidSpaces;
 		gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
 
-		removeSpace(gameInfo, 2, 2);
+		removeSpace(gameInfo, snakeHead->Row, snakeHead->Column);
 		addApple(gameInfo);
 		
 
@@ -68,8 +94,18 @@ int main() {
 				}
 			}
 			else {
-				nextMove = safeMove(gameInfo, snakeHead);
-				Sleep(500);
+				switch (currBotType) {
+					case SIMPLE:
+						nextMove = simpleMove(gameInfo, snakeHead);
+					break;
+					case SAFE:
+						nextMove = safeMove(gameInfo, snakeHead);
+					break;
+					case TRACK:
+						nextMove = trackMove(snakeHead, trackMoveTable);
+					break;
+				}
+				Sleep(10);
 			}
 			
 			if (nextMove == 'w') {
@@ -89,7 +125,7 @@ int main() {
 			clearBoard(boardSize);
 			printBoard(boardSize, (std/(boardSize * boardSize)), board);
 			
-			if (currentEndCode != safe) {
+			if (currentEndCode != alive) {
 				endGame(boardSize, (lose/(boardSize * boardSize)));
 				printf("Total Moves: %d Total Apples: %d\n", moveCount, ((boardSize * boardSize) - *(gameInfo.totalValidSpaces) - 1));
 				break;
@@ -101,11 +137,20 @@ int main() {
 		freeValidSpaces(gameInfo.validSpaces);
 		free(gameInfo.appleLocation);
 		freeSnake(snakeHead);
-		
+		if (currMode == bot && currBotType == TRACK) {
+			freeTrackMoveTable(trackMoveTable, boardSize);
+		}
 
 		printf("Select Game Mode (1:Human, 2:Bot, -1:Quit)\n");
-		scanf(" %d", &currMode);
-		deleteLine(1);
+		tempMode = 0;
+		while (tempMode != human && tempMode != bot && tempMode != end) {
+			scanf(" %d", &tempMode);
+			deleteLine(1);
+		}
+		currMode = tempMode;
+		deleteLine(2);
+		
+		clearBoard(boardSize);
 	}
 
 	return 0;

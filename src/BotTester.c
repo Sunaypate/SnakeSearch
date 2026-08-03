@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "../include/BoardFuncs.h"
 #include "../include/SnakeLogic.h"
-#include "../include/SnakeAlg.h"
+#include "../include/SnakeAlgs.h"
 #include "../include/DataStructs.h"
 
 char spinner(int cCycle) {
@@ -19,9 +19,9 @@ unsigned int generateSeed() {
 }
 
 int main(int argc, char *argv[]) {
-    SYSTEMTIME sTime;
-    SYSTEMTIME eTime;
-    GetLocalTime(&sTime);
+    // SYSTEMTIME sTime;
+    // SYSTEMTIME eTime;
+    // GetLocalTime(&sTime);
 
     if (argc < 3) {
         printf("Pass total tests to trial and board size.\n");
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         
 
         Space** board = initalizeBoard(boardSize);
-        Snake* snakeHead = createSnake(board, 2, 2);
+        Snake* snakeHead = createSnake(board, boardSize);
         int totalValidSpaces = boardSize*boardSize;
 
         gameInfo.board = board;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
         gameInfo.totalValidSpaces = &totalValidSpaces;
         gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
 
-        removeSpace(gameInfo, 2, 2);
+        removeSpace(gameInfo, snakeHead->Row, snakeHead->Column);
         addApple(gameInfo);
 
         char nextMove;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
                 snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row, snakeHead->Column + 1);           
             }
             totalMoves++;
-            if (currentEndCode != safe) {
+            if (currentEndCode != alive) {
                 break;
             }
         }
@@ -93,9 +93,9 @@ int main(int argc, char *argv[]) {
         fputs(dataBuffer, snakeData);
         printf(DEL "\r");
     }
-    GetLocalTime(&eTime);
-    SYSTEMTIME tTime = {.wMinute = eTime.wMinute - sTime.wMinute, 
-                        .wSecond = eTime.wSecond - sTime.wSecond,
-                        .wMilliseconds = eTime.wMilliseconds - sTime.wMilliseconds};
-    printf("Total Time: %d:%d.%d", tTime.wMinute, tTime.wSecond, tTime.wMilliseconds);
+    // GetLocalTime(&eTime);
+    // SYSTEMTIME tTime = {.wMinute = eTime.wMinute - sTime.wMinute, 
+    //                     .wSecond = eTime.wSecond - sTime.wSecond,
+    //                     .wMilliseconds = eTime.wMilliseconds - sTime.wMilliseconds};
+    // printf("Total Time: %d:%d.%d", tTime.wMinute, tTime.wSecond, tTime.wMilliseconds);
 }

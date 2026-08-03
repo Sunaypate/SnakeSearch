@@ -1,4 +1,4 @@
-#include "../include/SnakeAlg.h"
+#include "../include/SnakeAlgs.h"
 
 #include "../include/DataStructs.h"
 #include <stdio.h>
@@ -119,3 +119,91 @@ char safeMove(gameData gameInfo, Snake* snakeHead) {
 	}
 	return 'w';
 }
+
+char** initTrackMoveTable(int boardSize) {
+	char** lookUpTable = (char**)malloc(boardSize * sizeof(char*));
+	for (int row = 0; row < boardSize; row++) {
+		lookUpTable[row] = (char*)malloc(boardSize * sizeof(char));
+	}
+
+
+	for (int topCell = 1; topCell < boardSize; topCell++) {
+		lookUpTable[0][topCell] = 'a';
+	}
+
+	for (int leftCell = 0; leftCell < boardSize - 1; leftCell++) {
+		lookUpTable[leftCell][0] = 's';
+	}
+
+	for (int bTurnCell = 0; bTurnCell < boardSize - 1; bTurnCell++) {
+		if (bTurnCell % 2 == 0) {
+			lookUpTable[boardSize - 1][bTurnCell] = 'd';
+		}
+		else {
+			lookUpTable[boardSize - 1][bTurnCell] = 'w';
+		}
+	}
+
+	for (int tTurnCell = 1; tTurnCell < boardSize - 1; tTurnCell++) {
+		if (tTurnCell % 2 == 0) {
+			lookUpTable[1][tTurnCell] = 's';
+		}
+		else {
+			lookUpTable[1][tTurnCell] = 'd';
+			
+		}
+	}
+
+	for (int cCol = 1; cCol < boardSize - 1; cCol++) {
+		char colMove = ' ';
+		if (cCol % 2 == 0) {
+			colMove = 's';
+		}
+		else {
+			colMove = 'w';
+		}
+
+		for (int cRow = 2; cRow < boardSize - 1; cRow++) {
+			lookUpTable[cRow][cCol] = colMove;
+		}
+	}
+
+	for (int rightCell = 1; rightCell < boardSize; rightCell++) {
+		lookUpTable[rightCell][boardSize - 1] = 'w';
+	}
+
+	return lookUpTable;
+}
+
+void freeTrackMoveTable(char** moveTable, int tableSize) {
+	for (int row = 0; row < tableSize; row++) {
+		free(moveTable[row]);
+	}
+
+	free(moveTable);
+}
+
+char trackMove(Snake* snakeHead, char** moveLoc) {
+	return moveLoc[snakeHead->Row][snakeHead->Column];
+}
+
+// char smartMove(gameData gameInfo, Snake* snakeHead, int snakeSize) {
+// 	Coor snakeLocs[snakeSize];
+// 	Coor appleLoc = *(gameInfo.appleLocation);
+
+// 	Snake* currSpot = snakeHead;
+// 	int currIndx = 0;
+// 	while (currSpot->previousSpot != NULL) {
+// 		snakeLocs[currIndx].Row = currSpot->Row;
+// 		snakeLocs[currIndx].Column = currSpot->Column;
+
+// 		currSpot = currSpot->previousSpot;
+// 		currIndx++;
+// 	}
+// 	snakeLocs[currIndx].Row = currSpot->Row;
+// 	snakeLocs[currIndx].Column = currSpot->Column;
+
+
+	
+// 	return 'w';
+// }

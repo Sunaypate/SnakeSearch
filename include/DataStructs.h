@@ -29,7 +29,7 @@ typedef struct gameData {
 } gameData;
 
 enum endCode {
-	safe,
+	alive,
 	won,
 	outOfBounds,
 	hitSelf

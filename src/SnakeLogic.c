@@ -5,20 +5,21 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-enum endCode currentEndCode = safe;
+enum endCode currentEndCode = alive;
 /**  
  * Creates a new snake head that must be saved to a variable and be used with all other
  * snake logic.
 */
-Snake* createSnake(Space** board, int startRow, int startColumn) {
-	board[startRow][startColumn].hasSnake = true;
-
+Snake* createSnake(Space** board, int boardSize) {
 	Snake* newSnake = (Snake*)malloc(sizeof(Snake));
-	newSnake->Row = startRow;
-	newSnake->Column = startColumn;
+
+	newSnake->Row = (rand() % ((boardSize - 1) - 0 + 1) + 0);
+	newSnake->Column = (rand() % ((boardSize - 1) - 0 + 1) + 0);
 	newSnake->previousSpot = NULL;
+
+	board[newSnake->Row][newSnake->Column].hasSnake = true;
 	// Since the header file doesn't actually create a variable for this, it must be made here
-	currentEndCode = safe;
+	currentEndCode = alive;
 	return newSnake;
 }
 

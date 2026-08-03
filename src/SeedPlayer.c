@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "../include/BoardFuncs.h"
 #include "../include/SnakeLogic.h"
-#include "../include/SnakeAlg.h"
+#include "../include/SnakeAlgs.h"
 #include "../include/DataStructs.h"
 
 int main() {
@@ -11,11 +11,11 @@ int main() {
 	gameData gameInfo;
     int boardSize = 4; // Must Preset This Line
 
-    unsigned int seed = 32021025; // And Also This Line (Also Do Bot Type Below)
+    unsigned int seed = 2819461; // And Also This Line (Also Do Bot Type Below)
     srand(seed);
 
     Space** board = initalizeBoard(boardSize);
-    Snake* snakeHead = createSnake(board, 2, 2);
+    Snake* snakeHead = createSnake(board, boardSize);
     int totalValidSpaces = boardSize*boardSize;
 
     gameInfo.board = board;
@@ -24,7 +24,7 @@ int main() {
     gameInfo.totalValidSpaces = &totalValidSpaces;
     gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
 
-    removeSpace(gameInfo, 2, 2);
+    removeSpace(gameInfo, snakeHead->Row, snakeHead->Column);
     addApple(gameInfo);
     
 
@@ -39,7 +39,7 @@ int main() {
         nextMove = safeMove(gameInfo, snakeHead); //Bot Type Here
 
         printf("Next Move: %c", nextMove);
-        Sleep(250);
+        Sleep(750);
 
         if (nextMove == 'w') {
             snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row - 1, snakeHead->Column);
@@ -57,7 +57,7 @@ int main() {
         clearBoard(boardSize);
         printBoard(boardSize, 0, board);
         
-        if (currentEndCode != safe) {
+        if (currentEndCode != alive) {
             endGame(boardSize, 50);
             printf("Total Moves: %d Total Apples: %d\n", moveCount, ((boardSize * boardSize) - *(gameInfo.totalValidSpaces) - 1));
             break;

@@ -98,9 +98,7 @@ void printBoard(int size, int waitTime, Space** board) {
 void clearBoard(int size) {
 	int exClearLines = 2;
 
-	for (int i = 0; i < size + exClearLines; i++) {
-		printf(DEL UP "");
-	}
+	deleteLine(size + exClearLines);
 	printf(DEL "\r");
 }
 
@@ -124,7 +122,7 @@ void endGame(int size, int speed) {
 		}
 		printf(WHT "YOU WIN!!!!\n");
 	}
-	else if (currentEndCode != safe) {
+	else {
 		for (int row = size - 1; row >= 0; row--) {
 			for (int col = size - 1; col >= 0; col--) {
 				Sleep(speed);

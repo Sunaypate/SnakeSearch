@@ -4,7 +4,7 @@ when I decided to do a snake algorithm project in C, I was a little worried that
 really helped me get in the weeds of debugging (since I never took on a project close to being this complex before).
 
 # Info / Progress
-So far, the game is playable by a human and three simple bots, one that targets the apple directly, another that targets the apple while avoiding hitting itself, and one that can create a guaranteed win path on an even sized board. Trying to create an actual algorithm now that can go fast and win consistently.
+So far, the game is playable by a human and three simple bots, one that targets the apple directly, another that targets the apple while avoiding hitting itself, and one that can create a guaranteed win path on an even sized board. Progress has been made on trying to create a fourth bot that can make smarter moves, although it still has a long way to go.
 
 # Future Goals
 * Implement bot that can consistently beat game --InProgress

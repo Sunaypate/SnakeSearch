@@ -21,6 +21,8 @@ void deleteLine(int amount);
 
 Space** initalizeBoard(int size);
 
+Space** copyBoard(Space** oldBoard, int size);
+
 Coor* initializeValidSpaces(int size);
 
 bool addApple(gameData gameInfo);

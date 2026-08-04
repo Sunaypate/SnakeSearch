@@ -13,4 +13,6 @@ void freeTrackMoveTable(char** moveTable, int tableSize);
 
 char trackMove(Snake* snakeHead, char** moveLoc);
 
+char smartMove(gameData gameInfo, Snake* snakeHead);
+
 #endif

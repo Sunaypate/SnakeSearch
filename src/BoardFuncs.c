@@ -39,6 +39,22 @@ Space** initalizeBoard(int size) {
 	return board;
 }
 
+Space** copyBoard(Space** oldBoard, int size) {
+	Space** board = (Space**)malloc(size * (sizeof(Space*)));
+
+	for (int row = 0; row < size; row++) {
+		board[row] = (Space*)malloc(size * sizeof(Space));
+	}
+
+	for (int row = 0; row < size; row++) {
+		for (int col = 0; col < size; col++) {
+			board[row][col] = oldBoard[row][col];			
+		}
+	}
+
+	return board;
+}
+
 Coor* initializeValidSpaces(int size) {
 	Coor* validSpaces = (Coor*)malloc(size * size * (sizeof(Coor)));
 	int count = 0;

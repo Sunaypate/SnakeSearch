@@ -106,7 +106,7 @@ int main() {
 					break;
 				}
 				Sleep(10);
-			}
+			}	
 			
 			if (nextMove == 'w') {
 				snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row - 1, snakeHead->Column);
@@ -118,9 +118,8 @@ int main() {
 				snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row + 1, snakeHead->Column);
 			}
 			else if (nextMove == 'd') {
-				snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row, snakeHead->Column + 1);           
-			}
-			
+				snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row, snakeHead->Column + 1);      
+			}	
 			
 			clearBoard(boardSize);
 			printBoard(boardSize, (std/(boardSize * boardSize)), board);

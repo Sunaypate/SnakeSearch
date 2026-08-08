@@ -43,7 +43,7 @@ run: bin/SnakeSearch.exe
 	bin/SnakeSearch.exe
 
 quickSim: bin/BotTester.exe
-	bin/BotTester.exe 1000000 4
+	bin/BotTester.exe 200000 4
 
 replay: bin/SeedPlayer.exe
 	bin/SeedPlayer.exe

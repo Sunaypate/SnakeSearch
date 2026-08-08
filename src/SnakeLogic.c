@@ -12,6 +12,10 @@ enum endCode currentEndCode = alive;
 */
 Snake* createSnake(Space** board, int boardSize) {
 	Snake* newSnake = (Snake*)malloc(sizeof(Snake));
+	if (newSnake == NULL) {
+		printf("Failled to allocate Memory");
+		return NULL; //Intentional early return;
+	}  
 
 	newSnake->Row = (rand() % ((boardSize - 1) - 0 + 1) + 0);
 	newSnake->Column = (rand() % ((boardSize - 1) - 0 + 1) + 0);

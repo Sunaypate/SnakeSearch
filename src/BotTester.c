@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <time.h>
 #include "../include/BoardFuncs.h"
 #include "../include/SnakeLogic.h"
 #include "../include/SnakeAlgs.h"
@@ -19,9 +20,7 @@ unsigned int generateSeed() {
 }
 
 int main(int argc, char *argv[]) {
-    // SYSTEMTIME sTime;
-    // SYSTEMTIME eTime;
-    // GetLocalTime(&sTime);
+    clock_t startTime = clock();
 
     if (argc < 3) {
         printf("Pass total tests to trial and board size.\n");
@@ -31,7 +30,7 @@ int main(int argc, char *argv[]) {
     int totalCycles = atoi(argv[1]);
     int boardSize = atoi(argv[2]);
 
-    FILE* snakeData = fopen("Data/SimpleSnakeData.csv", "w");
+    FILE* snakeData = fopen("Data/SmartSnakeData.csv", "w");
 	gameData gameInfo;
 
     srand(generateSeed());
@@ -41,6 +40,10 @@ int main(int argc, char *argv[]) {
         unsigned int seed = generateSeed();
         srand(seed);
         
+        // char dataBuffer[100];
+        // snprintf(dataBuffer, sizeof(dataBuffer), "%u\n", seed);
+        // fputs(dataBuffer, snakeData);
+        // Use above lines for collecting endless loop seeds
 
         Space** board = initalizeBoard(boardSize);
         Snake* snakeHead = createSnake(board, boardSize);
@@ -60,7 +63,7 @@ int main(int argc, char *argv[]) {
 
         while (true) {
             nextMove = ' ';
-            nextMove = simpleMove(gameInfo, snakeHead);
+            nextMove = smartMove(gameInfo, snakeHead);
             
             if (nextMove == 'w') {
                 snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row - 1, snakeHead->Column);
@@ -93,9 +96,14 @@ int main(int argc, char *argv[]) {
         fputs(dataBuffer, snakeData);
         printf(DEL "\r");
     }
-    // GetLocalTime(&eTime);
-    // SYSTEMTIME tTime = {.wMinute = eTime.wMinute - sTime.wMinute, 
-    //                     .wSecond = eTime.wSecond - sTime.wSecond,
-    //                     .wMilliseconds = eTime.wMilliseconds - sTime.wMilliseconds};
-    // printf("Total Time: %d:%d.%d", tTime.wMinute, tTime.wSecond, tTime.wMilliseconds);
+    clock_t endTime = clock();
+
+    double totalSeconds = (double)((endTime - startTime) / CLOCKS_PER_SEC);
+    long long miliseconds = (long long)(totalSeconds * 1000);
+
+    long long minutes = miliseconds / 60000;
+    long long seconds = (miliseconds % 60000) / 1000;
+    miliseconds %= 1000;
+
+    printf("Total Time: %lld:%lld.%lld", minutes, seconds, miliseconds);
 }

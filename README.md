@@ -4,11 +4,10 @@ when I decided to do a snake algorithm project in C, I was a little worried that
 really helped me get in the weeds of debugging (since I never took on a project close to being this complex before).
 
 # Info / Progress
-So far, the game is playable by a human and three simple bots, one that targets the apple directly, another that targets the apple while avoiding hitting itself, and one that can create a guaranteed win path on an even sized board. Progress has been made on trying to create a fourth bot that can make smarter moves, although it still has a long way to go.
+So far, the game is playable by a human and four bots, one that targets the apple directly, another that targets the apple while avoiding hitting itself, and one that can create a guaranteed win path on an even sized board. The final bot is a little more interesting. It can see how many spaces potential future moves will give, and whether or not they leave an opening (most of the time). This project is nearing is end for now so focus can be put on other things, so the last step now is to clean up some repetitive code and add documentation for my future self.
 
 # Future Goals
-* Implement bot that can consistently beat game --InProgress
-* Take data from the results of bot games --InProgress
+* Implement bot that can consistently beat game --Semicomplete
 * Change snake to use an array (like valid apple locations) instead of linked list
 * Visualizing the game through something nicer like pygame
 

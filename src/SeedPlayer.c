@@ -11,7 +11,7 @@ int main() {
 	gameData gameInfo;
     int boardSize = 4; // Must Preset This Line
 
-    unsigned int seed = 2819461; // And Also This Line (Also Do Bot Type Below)
+    unsigned int seed = 2192248640; // And Also This Line (Also Do Bot Type Below)
     srand(seed);
 
     Space** board = initalizeBoard(boardSize);
@@ -36,10 +36,10 @@ int main() {
         nextMove = ' ';
         moveCount++;
         printf("Move %d (w a s d)\n", moveCount);
-        nextMove = safeMove(gameInfo, snakeHead); //Bot Type Here
+        nextMove = smartMove(gameInfo, snakeHead); //Bot Type Here
 
-        printf("Next Move: %c", nextMove);
-        Sleep(750);
+        printf("Next Move: %c\n", nextMove);
+        system("pause");
 
         if (nextMove == 'w') {
             snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row - 1, snakeHead->Column);

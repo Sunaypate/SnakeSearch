@@ -20,7 +20,9 @@ enum gameMode {
 enum botType {
 	SIMPLE = 1,
 	SAFE = 2,
-	TRACK = 3
+	TRACK = 3,
+	SMART = 4,
+	BOTCOUNT = 5 // used as a bound for checking
 } currBotType;
 
 int main() {
@@ -51,8 +53,8 @@ int main() {
 		char** trackMoveTable;
 		if (currMode == bot) {
 			int tempBotType = 0;
-			printf("Select Bot Type (1:Simple, 2:Safe, 3:Track)\n");
-			while (tempBotType != SIMPLE && tempBotType != SAFE && tempBotType != TRACK) {
+			printf("Select Bot Type (1:Simple, 2:Safe, 3:Track, 4:Smart)\n");
+			while (tempBotType >= BOTCOUNT || tempBotType <= 0) {
 				scanf(" %d", &tempBotType);
 				deleteLine(1);
 			}
@@ -65,14 +67,27 @@ int main() {
 		}		
 
 		Space** board = initalizeBoard(boardSize);
+		if (board == NULL) {
+			return 0;
+		}
 		Snake* snakeHead = createSnake(board, boardSize);
-		int totalValidSpaces = boardSize*boardSize;
+		if (board == NULL) {
+			return 0;
+		}
+		int totalValidSpaces = boardSize * boardSize;
 
 		gameInfo.board = board;
 		gameInfo.boardSize = boardSize;
 		gameInfo.validSpaces = initializeValidSpaces(boardSize);
+		if (gameInfo.validSpaces == NULL) {
+			return 0;
+		}
 		gameInfo.totalValidSpaces = &totalValidSpaces;
 		gameInfo.appleLocation = (Coor*)malloc(sizeof(Coor));
+		if (gameInfo.appleLocation == NULL) {
+			printf("Failled to allocate Memory");
+			return 0; //Intentional early return;
+		}  
 
 		removeSpace(gameInfo, snakeHead->Row, snakeHead->Column);
 		addApple(gameInfo);
@@ -104,8 +119,13 @@ int main() {
 					case TRACK:
 						nextMove = trackMove(snakeHead, trackMoveTable);
 					break;
+					case SMART:
+						nextMove = smartMove(gameInfo, snakeHead);
+					break;
+					default:
+						nextMove = 'w';
 				}
-				Sleep(10);
+				Sleep(500);
 			}	
 			
 			if (nextMove == 'w') {
@@ -120,7 +140,6 @@ int main() {
 			else if (nextMove == 'd') {
 				snakeHead = moveSnake(gameInfo, snakeHead, snakeHead->Row, snakeHead->Column + 1);      
 			}	
-			
 			clearBoard(boardSize);
 			printBoard(boardSize, (std/(boardSize * boardSize)), board);
 			

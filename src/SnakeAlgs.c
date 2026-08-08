@@ -89,19 +89,15 @@ char enumToChar(enum Direction move) {
 		case W:
 			return 'w';
 		break;
-
 		case A:
 			return 'a';
 		break;
-
 		case S:
 			return 's';
 		break;
-
 		case D:
 			return 'd';
 		break;
-
 		default:
 			return 'w';
 		break;
@@ -134,19 +130,28 @@ char safeMove(gameData gameInfo, Snake* snakeHead) {
 
 char** initTrackMoveTable(int boardSize) {
 	char** lookUpTable = (char**)malloc(boardSize * sizeof(char*));
+	if (lookUpTable == NULL) {
+		printf("Failled to allocate Memory");
+		return NULL; //Intentional early return;
+	}  
+
 	for (int row = 0; row < boardSize; row++) {
 		lookUpTable[row] = (char*)malloc(boardSize * sizeof(char));
+		if (lookUpTable[row] == NULL) {
+			printf("Failled to allocate Memory");
+			return NULL; //Intentional early return;
+		}  
 	}
-
 
 	for (int topCell = 1; topCell < boardSize; topCell++) {
 		lookUpTable[0][topCell] = 'a';
 	}
-
 	for (int leftCell = 0; leftCell < boardSize - 1; leftCell++) {
 		lookUpTable[leftCell][0] = 's';
 	}
-
+	for (int rightCell = 1; rightCell < boardSize; rightCell++) {
+		lookUpTable[rightCell][boardSize - 1] = 'w';
+	}
 	for (int bTurnCell = 0; bTurnCell < boardSize - 1; bTurnCell++) {
 		if (bTurnCell % 2 == 0) {
 			lookUpTable[boardSize - 1][bTurnCell] = 'd';
@@ -155,7 +160,6 @@ char** initTrackMoveTable(int boardSize) {
 			lookUpTable[boardSize - 1][bTurnCell] = 'w';
 		}
 	}
-
 	for (int tTurnCell = 1; tTurnCell < boardSize - 1; tTurnCell++) {
 		if (tTurnCell % 2 == 0) {
 			lookUpTable[1][tTurnCell] = 's';
@@ -180,10 +184,6 @@ char** initTrackMoveTable(int boardSize) {
 		}
 	}
 
-	for (int rightCell = 1; rightCell < boardSize; rightCell++) {
-		lookUpTable[rightCell][boardSize - 1] = 'w';
-	}
-
 	return lookUpTable;
 }
 
@@ -199,54 +199,135 @@ char trackMove(Snake* snakeHead, char** moveLoc) {
 	return moveLoc[snakeHead->Row][snakeHead->Column];
 }
 
-int validArea(Space** board, int boardSize, Coor snakeHead) {
+//TODO implement tail tracking
+int validArea(Space** board, int boardSize, Coor snakeHead, Coor tailLoc, bool* hasTail) {
 	int totalSpaces = 0;
 	int snakeRow = snakeHead.Row;
 	int snakeCol = snakeHead.Column;
+	int yMoveTypes[4] = {-1, 0, 1, 0};
+	int xMoveTypes[4] = {0, -1, 0, 1};
 	board[snakeRow][snakeCol].hasSnake = true;
-	
-	if (!(snakeRow-1 < 0) && !(board[snakeRow-1][snakeCol].hasSnake)) {
-		totalSpaces++;
-		board[snakeHead.Row][snakeHead.Column].hasSnake = true;
-		totalSpaces += validArea(board, boardSize, (Coor){.Row = snakeHead.Row - 1, .Column = snakeHead.Column});
+
+	for (int direction = 0; direction < 4; direction++) {
+		int nextRow = snakeHead.Row + yMoveTypes[direction];
+		int nextCol = snakeHead.Column + xMoveTypes[direction];
+
+		if (!(nextRow < 0) && !(nextRow == boardSize) &&
+			!(nextCol < 0) && !(nextCol == boardSize) &&
+			!(board[nextRow][nextCol].hasSnake)) {
+
+			totalSpaces++;
+			totalSpaces += validArea(board, boardSize, (Coor){.Row = nextRow, .Column = nextCol}, tailLoc, hasTail);
+		}
+
+		if (nextRow == tailLoc.Row && nextCol == tailLoc.Column) {
+			*hasTail = true;
+		}
 	}
-	if (!(snakeCol-1 < 0) && !(board[snakeRow][snakeCol-1].hasSnake)) {
-		totalSpaces++;
-		board[snakeHead.Row][snakeHead.Column].hasSnake = true;
-		totalSpaces += validArea(board, boardSize, (Coor){.Row = snakeHead.Row, .Column = snakeHead.Column - 1});
-	}
-	if (!(snakeRow+1 == boardSize) && !(board[snakeRow+1][snakeCol].hasSnake)) {
-		totalSpaces++;
-		board[snakeHead.Row][snakeHead.Column].hasSnake = true;
-		totalSpaces += validArea(board, boardSize, (Coor){.Row = snakeHead.Row + 1, .Column = snakeHead.Column});
-	}
-	if (!(snakeCol+1 == boardSize) && !(board[snakeRow][snakeCol+1].hasSnake)) {
-		totalSpaces++;
-		board[snakeHead.Row][snakeHead.Column].hasSnake = true;
-		totalSpaces += validArea(board, boardSize, (Coor){.Row = snakeHead.Row , .Column = snakeHead.Column + 1});
-	}
-	
+
+
 	return totalSpaces;
 }
 
-char smartMove(gameData gameInfo, Snake* snakeHead) {
-	// Coor appleLoc = *(gameInfo.appleLocation);
-	Coor snakeLoc = {.Row = snakeHead->Row, .Column = snakeHead->Column};
-	int potMoveAreas[4];
 
-	//TODO: Implement this style for the other move functions
+char smartMove(gameData gameInfo, Snake* snakeHead) {
+	Coor appleLoc = *(gameInfo.appleLocation);
+	Coor snakeLoc = {.Row = snakeHead->Row, .Column = snakeHead->Column};
+	Coor tailLoc;
+
+	Snake* currSpot = snakeHead;
+	while (currSpot->previousSpot != NULL) {
+		currSpot = currSpot->previousSpot;
+	}
+	tailLoc.Row = currSpot->Row;
+	tailLoc.Column = currSpot->Column;
+
 	bool validMoves[4] = {false, false, false, false};
 	getSafeMoves(gameInfo.board, gameInfo.boardSize, snakeLoc, validMoves);
- 	int xMoveTypes[4] = {-1, 0, 1, 0};
-	int yMoveTypes[4] = {0, -1, 0, 1};
+	bool targetDir[4] = {false, false, false, false};
+	getTargetDirection(snakeLoc, appleLoc, targetDir);
 
-	for (int i = W;  i < 4; i++) {
+ 	int yMoveTypes[4] = {-1, 0, 1, 0};
+	int xMoveTypes[4] = {0, -1, 0, 1};
+
+	int potMoveAreas[4] = {0, 0, 0, 0};
+	bool hadTail[4] = {false, false, false, false};
+
+	for (int i = 0;  i < 4; i++) {
 		if (validMoves[i] == true) {
 			Space** boardCopy = copyBoard(gameInfo.board, gameInfo.boardSize);
-			potMoveAreas[i] = validArea(boardCopy, gameInfo.boardSize, (Coor){.Row = snakeLoc.Row + xMoveTypes[i], .Column = snakeLoc.Column + yMoveTypes[i]});
+			potMoveAreas[i] = validArea(
+				boardCopy, 
+				gameInfo.boardSize, 
+				(Coor){.Row = snakeLoc.Row + yMoveTypes[i], .Column = snakeLoc.Column + xMoveTypes[i]}, 
+				tailLoc, 
+				&hadTail[i]
+			);
+
+			//Debug Line that shows moves in each direction		
 			// printf("Move Count: %d %d\n", i, potMoveAreas[i]);
+			// printf("Bool tail: %d\n", (int)hadTail[i]);
+
 			freeBoard(gameInfo.boardSize, boardCopy);
 		}
+	}
+
+	char finalDirection[4] = {' ', ' ', ' ', ' '};
+	int directionCount = -1;
+	// Try to make a move toward the apple that has an escape
+	// if (!(gameInfo.board[snakeLoc.Row + yMoveTypes[i]][snakeLoc.Column + xMoveTypes[i]].hasApple)) {
+	// 			return enumToChar(i);
+	// 	}
+	// && (potMoveAreas[i]) >= 1
+	for (int i = 0; i < 4; i++) {
+		if ((targetDir[i]) && (validMoves[i]) && hadTail[i]) {
+			directionCount++;
+			finalDirection[directionCount] = enumToChar(i);
+		}
+	}
+	if (directionCount >= 0) {
+		// randFormula = ((rand() % (max - min + 1)) + min)
+		int directionIndx = (rand() % (directionCount - 0 + 1) + 0);
+		return finalDirection[directionIndx];
+	}
+
+	// Try to make a general safe move with an escape
+	for (int i = 0; i < 4; i++) {
+		if ((validMoves[i]) && (potMoveAreas[i]) >= 1 && hadTail[i]) {
+			directionCount++;
+			finalDirection[directionCount] = enumToChar(i);
+		}
+	}
+	if (directionCount >= 0) {
+		// randFormula = ((rand() % (max - min + 1)) + min)
+		int directionIndx = (rand() % (directionCount - 0 + 1) + 0);
+		return finalDirection[directionIndx];
+	}
+
+	// Just try to move somewhere with space
+	for (int i = 0; i < 4; i++) {
+		if ((validMoves[i]) && (potMoveAreas[i]) >= 1) {
+			directionCount++;
+			finalDirection[directionCount] = enumToChar(i);
+		}
+	}
+	if (directionCount >= 0) {
+		// randFormula = ((rand() % (max - min + 1)) + min)
+		int directionIndx = (rand() % (directionCount - 0 + 1) + 0);
+		return finalDirection[directionIndx];
+	}
+
+	// Preserve Life
+	for (int i = 0; i < 4; i++) {
+		if ((validMoves[i])) {
+			directionCount++;
+			finalDirection[directionCount] = enumToChar(i);;
+		}
+	}
+	if (directionCount >= 0) {
+		// randFormula = ((rand() % (max - min + 1)) + min)
+		int directionIndx = (rand() % (directionCount - 0 + 1) + 0);
+		return finalDirection[directionIndx];
 	}
 
 	return 'w';

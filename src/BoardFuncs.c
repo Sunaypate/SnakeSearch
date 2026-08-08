@@ -22,9 +22,17 @@ Space** initalizeBoard(int size) {
 	Space emptyPosit = {.hasApple = false, .hasSnake = false};
 
 	Space** board = (Space**)malloc(size * (sizeof(Space*)));
+	if (board == NULL) {
+		printf("Failled to allocate Memory");
+		return NULL; //Intentional early return;
+	}  
 
 	for (int row = 0; row < size; row++) {
 		board[row] = (Space*)malloc(size * sizeof(Space));
+		if (board[row] == NULL) {
+			printf("Failled to allocate Memory");
+			return NULL; //Intentional early return;
+		}  
 	}
 
 	int count = 0;
@@ -41,9 +49,17 @@ Space** initalizeBoard(int size) {
 
 Space** copyBoard(Space** oldBoard, int size) {
 	Space** board = (Space**)malloc(size * (sizeof(Space*)));
+	if (board == NULL) {
+		printf("Failled to allocate Memory");
+		return NULL; //Intentional early return;
+	}  
 
 	for (int row = 0; row < size; row++) {
 		board[row] = (Space*)malloc(size * sizeof(Space));
+		if (board[row] == NULL) {
+			printf("Failled to allocate Memory");
+			return NULL; //Intentional early return;
+		}  
 	}
 
 	for (int row = 0; row < size; row++) {
@@ -57,6 +73,11 @@ Space** copyBoard(Space** oldBoard, int size) {
 
 Coor* initializeValidSpaces(int size) {
 	Coor* validSpaces = (Coor*)malloc(size * size * (sizeof(Coor)));
+	if (validSpaces == NULL) {
+		printf("Failled to allocate Memory");
+		return NULL; //Intentional early return;
+	}  
+	
 	int count = 0;
 	for (int row = 0; row < size; row++) {
 		for (int col = 0; col < size; col++) {
@@ -112,7 +133,7 @@ void printBoard(int size, int waitTime, Space** board) {
 }
 
 void clearBoard(int size) {
-	int exClearLines = 2;
+	int exClearLines = 4;
 
 	deleteLine(size + exClearLines);
 	printf(DEL "\r");
